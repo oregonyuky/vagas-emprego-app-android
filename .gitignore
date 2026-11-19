@@ -1,0 +1,22 @@
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# Java / Maven
+backend/target/
+*.log
+
+# Android / Gradle
+.gradle/
+android/.gradle/
+android/local.properties
+android/**/build/
+*.apk
+
+# MongoDB local
+mongodb-data/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vagas Online | Administração</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="hero">
+    <div>
+        <span class="eyebrow">Painel administrativo</span>
+        <h1>Vagas Online</h1>
+        <p>Cadastre e gerencie oportunidades de trabalho em um só lugar.</p>
+    </div>
+    <div id="api-status" class="status">Conectando...</div>
+</header>
+
+<main>
+    <section class="panel form-panel">
+        <div class="section-title">
+            <div>
+                <span class="eyebrow">Cadastro</span>
+                <h2 id="form-title">Nova vaga</h2>
+            </div>
+            <button id="cancel-edit" class="button ghost hidden" type="button">Cancelar edição</button>
+        </div>
+
+        <form id="vaga-form">
+            <input id="vaga-id" type="hidden">
+            <div class="grid two">
+                <label>Empresa
+                    <select id="empresa" required></select>
+                </label>
+                <label>Cargo
+                    <select id="cargo" required></select>
+                </label>
+                <label>Cidade
+                    <input id="cidade" maxlength="100" required placeholder="Presidente Prudente">
+                </label>
+                <label>Estado
+                    <input id="estado" maxlength="2" required placeholder="SP">
+                </label>
+                <label>Regime
+                    <select id="regime" required>
+                        <option value="CLT">CLT</option>
+                        <option value="PJ">PJ</option>
+                    </select>
+                </label>
+                <label>Jornada
+                    <input id="jornada" maxlength="100" required placeholder="40 horas semanais">
+                </label>
+                <label>Remuneração (R$)
+                    <input id="remuneracao" type="number" min="0.01" step="0.01" required placeholder="5000,00">
+                </label>
+                <label>Formação
+                    <input id="formacao" maxlength="500" required placeholder="Superior completo ou cursando">
+                </label>
+            </div>
+            <label>Requisitos
+                <textarea id="requisitos" maxlength="2000" required rows="3"></textarea>
+            </label>
+            <label>Conhecimentos
+                <textarea id="conhecimentos" maxlength="2000" required rows="3"></textarea>
+            </label>
+            <div class="form-actions">
+                <button class="button primary" type="submit">Salvar vaga</button>
+                <span id="feedback" role="status"></span>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="section-title">
+            <div>
+                <span class="eyebrow">Oportunidades</span>
+                <h2>Vagas cadastradas</h2>
+            </div>
+            <button id="refresh" class="button ghost" type="button">Atualizar</button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Cargo</th>
+                    <th>Empresa</th>
+                    <th>Local</th>
+                    <th>Regime</th>
+                    <th>Remuneração</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody id="vagas-body"></tbody>
+            </table>
+        </div>
+        <p id="empty" class="empty hidden">Nenhuma vaga cadastrada.</p>
+    </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,2 +1,6 @@
-# vagas-emprego-app-android
-O sistema Web + Mobile a ser desenvolvido na discipilna consiste em um sistema resumido de ofertas de vagas de emprego. O sistema deverá oferecer o cadastro de vagas de emprego para cargos e empresas distintas e oferecer um módulo de busca e registro de intenção para as vagas na forma de um app android .
+# Vagas Online
+
+Sistema acadêmico completo de ofertas de emprego, composto por API Spring Boot/MongoDB,
+frontend web administrativo e aplicativo Android com Retrofit.
+
+Consulte `readme.txt` para os pré-requisitos e o passo a passo de execução.
