@@ -74,7 +74,7 @@ input:focus, select:focus, textarea:focus { outline: 3px solid #5b47e025; border
 .table-filters label { width: min(100%, 520px); margin: 0; }
 .result-count { padding-bottom: .8rem; color: var(--muted); font-size: .85rem; white-space: nowrap; }
 .table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
+table { width: auto; min-width: min(1050px, 100%); margin: 0 auto; border-collapse: collapse; }
 th, td { padding: .9rem .7rem; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
 th { color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
 .details-thumbnails { display: flex; flex-wrap: wrap; gap: .4rem; width: 230px; }
