@@ -75,9 +75,11 @@ function renderizarVagas() {
                 </div>
             </td>
             <td>${escapeHtml(vaga.remuneracao)}</td>
-            <td class="actions">
-                <button class="button ghost small" data-edit="${escapeHtml(vaga.registro)}">Editar</button>
-                <button class="button danger small" data-delete="${escapeHtml(vaga.registro)}">Excluir</button>
+            <td class="actions-column">
+                <div class="actions-buttons">
+                    <button class="button ghost small" data-edit="${escapeHtml(vaga.registro)}">Editar</button>
+                    <button class="button danger small" data-delete="${escapeHtml(vaga.registro)}">Excluir</button>
+                </div>
             </td>
         </tr>`).join('');
 }

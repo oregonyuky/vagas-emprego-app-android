@@ -114,7 +114,17 @@ th { color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transfo
 }
 .vaga-tooltip.visible { visibility: visible; opacity: 1; transform: translateY(0); }
 .vaga-tooltip strong { color: #cfc7ff; }
-td.actions { display: flex; gap: .4rem; }
+th.actions-column, td.actions-column {
+    position: sticky;
+    right: 0;
+    min-width: 148px;
+    background: var(--surface);
+    box-shadow: -10px 0 14px -14px #172036aa;
+}
+th.actions-column { z-index: 3; }
+td.actions-column { z-index: 2; }
+.actions-buttons { display: flex; align-items: center; gap: .4rem; }
+.actions-buttons .button { flex: 1; }
 .empty { padding: 2rem; color: var(--muted); text-align: center; }
 .hidden { display: none !important; }
 
