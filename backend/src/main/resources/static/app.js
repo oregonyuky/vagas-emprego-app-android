@@ -67,7 +67,7 @@ function renderizarVagas() {
             <td>${escapeHtml(vaga.cidade)}/${escapeHtml(vaga.estado)}</td>
             <td>${escapeHtml(vaga.regime)}</td>
             <td>${escapeHtml(vaga.jornada_trabalho)}</td>
-            <td>
+            <td class="details-column">
                 <div class="details-thumbnails">
                     ${criarThumbnail('Formação', vaga.formacao)}
                     ${criarThumbnail('Requisitos', vaga.pre_requisitos)}
