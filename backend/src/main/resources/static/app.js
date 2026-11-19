@@ -3,9 +3,12 @@ const form = document.querySelector('#vaga-form');
 const feedback = document.querySelector('#feedback');
 const tbody = document.querySelector('#vagas-body');
 let vagas = [];
+let empresas = [];
+let cargos = [];
 
 const fields = {
     id: document.querySelector('#vaga-id'),
+    registro: document.querySelector('#registro'),
     empresa: document.querySelector('#empresa'),
     cargo: document.querySelector('#cargo'),
     cidade: document.querySelector('#cidade'),
@@ -29,14 +32,14 @@ async function request(url, options) {
 }
 
 async function carregarCatalogos() {
-    const [empresas, cargos] = await Promise.all([
+    [empresas, cargos] = await Promise.all([
         request(`${api}/empresa/get-all-empresas`),
         request(`${api}/cargo/get-all-cargos`)
     ]);
     fields.empresa.innerHTML = empresas.map(item =>
-        `<option value="${item.id}">${escapeHtml(item.nomeFantasia)}</option>`).join('');
+        `<option value="${escapeHtml(item.nome_fantasia)}">${escapeHtml(item.nome_fantasia)}</option>`).join('');
     fields.cargo.innerHTML = cargos.map(item =>
-        `<option value="${item.id}">${escapeHtml(item.nome)}</option>`).join('');
+        `<option value="${escapeHtml(item.nome)}">${escapeHtml(item.nome)}</option>`).join('');
 }
 
 async function carregarVagas() {
@@ -48,14 +51,14 @@ function renderizarVagas() {
     document.querySelector('#empty').classList.toggle('hidden', vagas.length > 0);
     tbody.innerHTML = vagas.map(vaga => `
         <tr>
-            <td><strong>${escapeHtml(vaga.cargo.nome)}</strong></td>
-            <td>${escapeHtml(vaga.empresa.nomeFantasia)}</td>
+            <td><strong>${escapeHtml(vaga.cargo)}</strong></td>
+            <td>${escapeHtml(vaga.empresa.nome_fantasia)}</td>
             <td>${escapeHtml(vaga.cidade)}/${escapeHtml(vaga.estado)}</td>
             <td>${escapeHtml(vaga.regime)}</td>
-            <td>${formatarMoeda(vaga.remuneracao)}</td>
+            <td>${escapeHtml(vaga.remuneracao)}</td>
             <td class="actions">
-                <button class="button ghost small" data-edit="${vaga.id}">Editar</button>
-                <button class="button danger small" data-delete="${vaga.id}">Excluir</button>
+                <button class="button ghost small" data-edit="${escapeHtml(vaga.registro)}">Editar</button>
+                <button class="button danger small" data-delete="${escapeHtml(vaga.registro)}">Excluir</button>
             </td>
         </tr>`).join('');
 }
@@ -63,29 +66,31 @@ function renderizarVagas() {
 form.addEventListener('submit', async event => {
     event.preventDefault();
     setFeedback('Salvando...', '');
+    const empresaSelecionada = empresas.find(item => item.nome_fantasia === fields.empresa.value);
     const body = {
-        empresaId: fields.empresa.value,
-        cargoId: fields.cargo.value,
+        registro: fields.registro.value,
+        empresa: empresaSelecionada,
+        cargo: fields.cargo.value,
         cidade: fields.cidade.value,
         estado: fields.estado.value,
-        requisitos: fields.requisitos.value,
+        pre_requisitos: fields.requisitos.value,
         formacao: fields.formacao.value,
-        conhecimentos: fields.conhecimentos.value,
+        conhecimentos_requeridos: fields.conhecimentos.value,
         regime: fields.regime.value,
-        jornada: fields.jornada.value,
+        jornada_trabalho: fields.jornada.value,
         remuneracao: Number(fields.remuneracao.value)
+            .toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
     };
-    const id = fields.id.value;
-    if (id) body.id = id;
+    const editando = Boolean(fields.id.value);
     try {
-        await request(id ? `${api}/vagas` : `${api}/vagas/vaga`, {
-            method: id ? 'PUT' : 'POST',
+        await request(editando ? `${api}/vagas` : `${api}/vagas/vaga`, {
+            method: editando ? 'PUT' : 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body)
         });
         limparFormulario();
         await carregarVagas();
-        setFeedback(id ? 'Vaga atualizada.' : 'Vaga cadastrada.', 'ok');
+        setFeedback(editando ? 'Vaga atualizada.' : 'Vaga cadastrada.', 'ok');
     } catch (error) {
         setFeedback(error.message, 'error');
     }
@@ -94,10 +99,10 @@ form.addEventListener('submit', async event => {
 tbody.addEventListener('click', async event => {
     const editId = event.target.dataset.edit;
     const deleteId = event.target.dataset.delete;
-    if (editId) preencherEdicao(vagas.find(vaga => vaga.id === editId));
+    if (editId) preencherEdicao(vagas.find(vaga => vaga.registro === editId));
     if (deleteId && confirm('Excluir esta vaga e seus registros de interesse?')) {
         try {
-            await request(`${api}/vagas/${deleteId}`, {method: 'DELETE'});
+            await request(`${api}/vagas/${encodeURIComponent(deleteId)}`, {method: 'DELETE'});
             await carregarVagas();
             setFeedback('Vaga excluída.', 'ok');
         } catch (error) {
@@ -107,19 +112,32 @@ tbody.addEventListener('click', async event => {
 });
 
 function preencherEdicao(vaga) {
-    fields.id.value = vaga.id;
-    fields.empresa.value = vaga.empresa.id;
-    fields.cargo.value = vaga.cargo.id;
-    ['cidade', 'estado', 'regime', 'jornada', 'remuneracao', 'formacao', 'requisitos', 'conhecimentos']
-        .forEach(name => fields[name].value = vaga[name]);
+    fields.id.value = vaga.registro;
+    fields.registro.value = vaga.registro;
+    fields.registro.disabled = true;
+    fields.empresa.value = vaga.empresa.nome_fantasia;
+    fields.cargo.value = vaga.cargo;
+    fields.cidade.value = vaga.cidade;
+    fields.estado.value = vaga.estado;
+    fields.regime.value = vaga.regime;
+    fields.jornada.value = vaga.jornada_trabalho;
+    fields.remuneracao.value = moedaParaNumero(vaga.remuneracao);
+    fields.formacao.value = vaga.formacao;
+    fields.requisitos.value = vaga.pre_requisitos;
+    fields.conhecimentos.value = vaga.conhecimentos_requeridos;
     document.querySelector('#form-title').textContent = 'Editar vaga';
     document.querySelector('#cancel-edit').classList.remove('hidden');
     document.querySelector('.form-panel').scrollIntoView({behavior: 'smooth'});
 }
 
+function moedaParaNumero(value) {
+    return String(value).replace(/[^0-9,]/g, '').replace(',', '.');
+}
+
 function limparFormulario() {
     form.reset();
     fields.id.value = '';
+    fields.registro.disabled = false;
     document.querySelector('#form-title').textContent = 'Nova vaga';
     document.querySelector('#cancel-edit').classList.add('hidden');
 }
@@ -127,10 +145,6 @@ function limparFormulario() {
 function setFeedback(message, type) {
     feedback.textContent = message;
     feedback.className = type;
-}
-
-function formatarMoeda(value) {
-    return Number(value).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 }
 
 function escapeHtml(value = '') {

@@ -1,29 +1,32 @@
 package br.edu.unoeste.vagasonline.model;
 
-import java.math.BigDecimal;
+import com.google.gson.annotations.SerializedName;
 
 public class Vaga {
-    private String id;
+    private String registro;
     private Empresa empresa;
-    private Cargo cargo;
+    private String cargo;
     private String cidade;
     private String estado;
-    private String requisitos;
+    @SerializedName("pre_requisitos")
+    private String preRequisitos;
     private String formacao;
-    private String conhecimentos;
+    @SerializedName("conhecimentos_requeridos")
+    private String conhecimentosRequeridos;
     private String regime;
-    private String jornada;
-    private BigDecimal remuneracao;
+    @SerializedName("jornada_trabalho")
+    private String jornadaTrabalho;
+    private String remuneracao;
 
-    public String getId() { return id; }
+    public String getRegistro() { return registro; }
     public Empresa getEmpresa() { return empresa; }
-    public Cargo getCargo() { return cargo; }
+    public String getCargo() { return cargo; }
     public String getCidade() { return cidade; }
     public String getEstado() { return estado; }
-    public String getRequisitos() { return requisitos; }
+    public String getPreRequisitos() { return preRequisitos; }
     public String getFormacao() { return formacao; }
-    public String getConhecimentos() { return conhecimentos; }
+    public String getConhecimentosRequeridos() { return conhecimentosRequeridos; }
     public String getRegime() { return regime; }
-    public String getJornada() { return jornada; }
-    public BigDecimal getRemuneracao() { return remuneracao; }
+    public String getJornadaTrabalho() { return jornadaTrabalho; }
+    public String getRemuneracao() { return remuneracao; }
 }

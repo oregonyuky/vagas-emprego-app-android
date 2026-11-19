@@ -1,5 +1,7 @@
 package unoeste.fipp.vagasonlinebackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -7,10 +9,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "empresas")
 public class Empresa {
     @Id
+    @JsonIgnore
     private String id;
     @Field("nome_fantasia")
+    @JsonProperty("nome_fantasia")
     private String nomeFantasia;
     @Field("razao_social")
+    @JsonProperty("razao_social")
     private String razaoSocial;
     private String tipo;
 

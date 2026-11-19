@@ -1,24 +1,23 @@
 package unoeste.fipp.vagasonlinebackend.dto;
 
-import jakarta.validation.constraints.DecimalMin;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.math.BigDecimal;
+import unoeste.fipp.vagasonlinebackend.entities.Empresa;
 
 public record VagaRequest(
-        String id,
-        @NotBlank String empresaId,
-        @NotBlank String cargoId,
+        @NotBlank @Size(max = 30) String registro,
+        @NotNull Empresa empresa,
+        @NotBlank @Size(max = 150) String cargo,
         @NotBlank @Size(max = 100) String cidade,
         @NotBlank @Pattern(regexp = "(?i)[A-Z]{2}", message = "deve conter a sigla com 2 letras") String estado,
-        @NotBlank @Size(max = 2000) String requisitos,
+        @JsonProperty("pre_requisitos") @NotBlank @Size(max = 2000) String preRequisitos,
         @NotBlank @Size(max = 500) String formacao,
-        @NotBlank @Size(max = 2000) String conhecimentos,
-        @NotBlank @Pattern(regexp = "(?i)CLT|PJ", message = "deve ser CLT ou PJ") String regime,
-        @NotBlank @Size(max = 100) String jornada,
-        @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal remuneracao
+        @JsonProperty("conhecimentos_requeridos") @NotBlank @Size(max = 2000) String conhecimentosRequeridos,
+        @NotBlank @Size(max = 50) String regime,
+        @JsonProperty("jornada_trabalho") @NotBlank @Size(max = 100) String jornadaTrabalho,
+        @NotBlank @Size(max = 50) String remuneracao
 ) {
 }

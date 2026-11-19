@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -94,16 +93,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mostrarDetalhes(Vaga vaga) {
-        NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
         String details = vaga.getEmpresa().getNomeFantasia() + "\n"
                 + vaga.getCidade() + "/" + vaga.getEstado() + " • " + vaga.getRegime() + "\n"
-                + vaga.getJornada() + " • " + currency.format(vaga.getRemuneracao()) + "\n\n"
+                + vaga.getJornadaTrabalho() + " • " + vaga.getRemuneracao() + "\n\n"
                 + "Formação\n" + vaga.getFormacao() + "\n\n"
-                + "Requisitos\n" + vaga.getRequisitos() + "\n\n"
-                + "Conhecimentos\n" + vaga.getConhecimentos();
+                + "Requisitos\n" + vaga.getPreRequisitos() + "\n\n"
+                + "Conhecimentos\n" + vaga.getConhecimentosRequeridos();
 
         new AlertDialog.Builder(this)
-                .setTitle(vaga.getCargo().getNome())
+                .setTitle(vaga.getCargo())
                 .setMessage(details)
                 .setNegativeButton("Fechar", null)
                 .setPositiveButton("Tenho interesse", (dialog, which) -> mostrarFormularioInteresse(vaga))
@@ -141,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     enviarInteresse(new InteresseRequest(
-                            vaga.getId(), text(nome), text(cpf), text(email), text(telefone)), dialog);
+                            vaga, text(nome), text(cpf), text(email), text(telefone)), dialog);
                 }));
         dialog.show();
     }

@@ -33,6 +33,10 @@ A API usa por padrão:
 
 Para usar outra conexão, defina a variável MONGODB_URI antes de iniciar a API.
 
+Na inicialização, a API carrega automaticamente e sem duplicar os arquivos em
+backend/src/main/resources/data nas coleções cargos, empresas, vagas e
+interesses. A carga contém 31 cargos, 19 empresas, 10 vagas e 1 interesse.
+
 
 3. INICIAR A API E O FRONTEND WEB
 ---------------------------------
@@ -52,7 +56,7 @@ Quando aparecer "Started VagasOnlineApplication", acesse:
   Painel web:  http://localhost:8080/
   Teste da API: http://localhost:8080/apis/vagas/get-all
 
-Na primeira execução são criados cargos, empresas e uma vaga de demonstração.
+Na primeira execução são carregados no MongoDB os JSONs fornecidos no trabalho.
 O painel web permite criar, editar e excluir vagas.
 
 Para gerar o JAR:
@@ -106,7 +110,7 @@ APK gerado:
 - Criação, consulta, edição e exclusão de vagas.
 - Pesquisa de vagas por cidade e estado no aplicativo Android.
 - Dados da vaga: empresa, cargo, cidade, estado, requisitos, formação,
-  conhecimentos, regime (CLT/PJ), jornada e remuneração.
+  conhecimentos, regime (CLT/PJ/Estágio), jornada e remuneração.
 - Painel web administrativo responsivo.
 - Pesquisa e detalhes de vagas no Android.
 - Ação "Tenho interesse" no Android com nome, CPF, e-mail e telefone.
@@ -119,9 +123,9 @@ APK gerado:
 
 POST   /apis/vagas/vaga
 PUT    /apis/vagas
-DELETE /apis/vagas/{id}
+DELETE /apis/vagas/{registro}
 GET    /apis/vagas/get-all
-GET    /apis/vagas/get-one/{id}
+GET    /apis/vagas/get-one/{registro}
 GET    /apis/empresa/get-all-empresas
 GET    /apis/cargo/get-all-cargos
 POST   /apis/interesse/candidato

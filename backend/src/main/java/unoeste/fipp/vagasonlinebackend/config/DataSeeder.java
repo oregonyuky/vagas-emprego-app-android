@@ -1,59 +1,65 @@
 package unoeste.fipp.vagasonlinebackend.config;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import org.bson.BsonArray;
+import org.bson.BsonDocument;
+import org.bson.BsonValue;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
-import unoeste.fipp.vagasonlinebackend.entities.Cargo;
-import unoeste.fipp.vagasonlinebackend.entities.Empresa;
-import unoeste.fipp.vagasonlinebackend.entities.Vaga;
-import unoeste.fipp.vagasonlinebackend.repositories.CargoRepository;
-import unoeste.fipp.vagasonlinebackend.repositories.EmpresaRepository;
-import unoeste.fipp.vagasonlinebackend.repositories.VagaRepository;
 
-import java.math.BigDecimal;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class DataSeeder implements ApplicationRunner {
-    private final CargoRepository cargoRepository;
-    private final EmpresaRepository empresaRepository;
-    private final VagaRepository vagaRepository;
+    private final MongoTemplate mongoTemplate;
 
-    public DataSeeder(CargoRepository cargoRepository, EmpresaRepository empresaRepository,
-                      VagaRepository vagaRepository) {
-        this.cargoRepository = cargoRepository;
-        this.empresaRepository = empresaRepository;
-        this.vagaRepository = vagaRepository;
+    public DataSeeder(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
-    public void run(ApplicationArguments args) {
-        Cargo desenvolvedor = cargoRepository.findByNomeIgnoreCase("Desenvolvedor Java")
-                .orElseGet(() -> cargoRepository.save(new Cargo(null, "Desenvolvedor Java")));
-        cargoRepository.findByNomeIgnoreCase("Analista de Dados")
-                .orElseGet(() -> cargoRepository.save(new Cargo(null, "Analista de Dados")));
-        cargoRepository.findByNomeIgnoreCase("Assistente Administrativo")
-                .orElseGet(() -> cargoRepository.save(new Cargo(null, "Assistente Administrativo")));
+    public void run(ApplicationArguments args) throws IOException {
+        importar("data/cargos.json", "cargos");
+        importar("data/empresas.json", "empresas");
+        importar("data/vagas.json", "vagas");
+        importar("data/interesses.json", "interesses");
+    }
 
-        Empresa empresa = empresaRepository.findByNomeFantasiaIgnoreCase("Tech Oeste")
-                .orElseGet(() -> empresaRepository.save(
-                        new Empresa(null, "Tech Oeste", "Tech Oeste Soluções Ltda.", "Tecnologia")));
-        empresaRepository.findByNomeFantasiaIgnoreCase("Comercial Paulista")
-                .orElseGet(() -> empresaRepository.save(
-                        new Empresa(null, "Comercial Paulista", "Comercial Paulista S.A.", "Comércio")));
-
-        if (vagaRepository.count() == 0) {
-            Vaga vaga = new Vaga();
-            vaga.setEmpresa(empresa);
-            vaga.setCargo(desenvolvedor);
-            vaga.setCidade("Presidente Prudente");
-            vaga.setEstado("SP");
-            vaga.setRequisitos("Experiência com desenvolvimento de APIs REST");
-            vaga.setFormacao("Ensino superior em Computação ou áreas relacionadas");
-            vaga.setConhecimentos("Java, Spring Boot, Git e bancos de dados");
-            vaga.setRegime("CLT");
-            vaga.setJornada("40 horas semanais");
-            vaga.setRemuneracao(new BigDecimal("5500.00"));
-            vagaRepository.save(vaga);
+    private void importar(String recurso, String colecao) throws IOException {
+        ClassPathResource resource = new ClassPathResource(recurso);
+        String json;
+        try (var input = resource.getInputStream()) {
+            json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
         }
+
+        MongoCollection<Document> collection = mongoTemplate.getCollection(colecao);
+        for (BsonValue value : BsonArray.parse(json)) {
+            BsonDocument bsonDocument = value.asDocument();
+            Document document = Document.parse(bsonDocument.toJson());
+            Bson identidade = identidade(colecao, document);
+            if (collection.countDocuments(identidade) == 0) {
+                collection.insertOne(document);
+            }
+        }
+    }
+
+    private Bson identidade(String colecao, Document document) {
+        return switch (colecao) {
+            case "cargos" -> Filters.eq("nome", document.getString("nome"));
+            case "empresas" -> Filters.eq("nome_fantasia", document.getString("nome_fantasia"));
+            case "vagas" -> Filters.eq("registro", document.getString("registro"));
+            case "interesses" -> Filters.and(
+                    Filters.eq("vaga.registro", document.get("vaga", Document.class).getString("registro")),
+                    Filters.eq("candidato.cpf", document.get("candidato", Document.class).getString("cpf"))
+            );
+            default -> throw new IllegalArgumentException("Coleção de carga desconhecida: " + colecao);
+        };
     }
 }

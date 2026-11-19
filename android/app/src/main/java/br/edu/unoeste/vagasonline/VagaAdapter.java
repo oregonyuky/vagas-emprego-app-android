@@ -8,10 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import br.edu.unoeste.vagasonline.model.Vaga;
 
@@ -43,11 +41,10 @@ public class VagaAdapter extends RecyclerView.Adapter<VagaAdapter.VagaViewHolder
     @Override
     public void onBindViewHolder(@NonNull VagaViewHolder holder, int position) {
         Vaga vaga = vagas.get(position);
-        NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-        holder.cargo.setText(vaga.getCargo().getNome());
+        holder.cargo.setText(vaga.getCargo());
         holder.empresa.setText(vaga.getEmpresa().getNomeFantasia());
         holder.resumo.setText(vaga.getCidade() + "/" + vaga.getEstado() + "  •  "
-                + vaga.getRegime() + "  •  " + currency.format(vaga.getRemuneracao()));
+                + vaga.getRegime() + "  •  " + vaga.getRemuneracao());
         holder.itemView.setOnClickListener(view -> listener.onClick(vaga));
     }
 

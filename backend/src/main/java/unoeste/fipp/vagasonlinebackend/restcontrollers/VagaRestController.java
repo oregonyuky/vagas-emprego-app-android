@@ -2,7 +2,6 @@ package unoeste.fipp.vagasonlinebackend.restcontrollers;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,15 +32,12 @@ public class VagaRestController {
 
     @PutMapping
     public ResponseEntity<Vaga> atualizar(@Valid @RequestBody VagaRequest request) {
-        if (!StringUtils.hasText(request.id())) {
-            throw new IllegalArgumentException("O registro da vaga é obrigatório");
-        }
         return ResponseEntity.ok(vagaService.atualizar(request));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable String id) {
-        vagaService.excluir(id);
+    @DeleteMapping("/{registro}")
+    public ResponseEntity<Void> excluir(@PathVariable String registro) {
+        vagaService.excluir(registro);
         return ResponseEntity.ok().build();
     }
 
@@ -50,8 +46,8 @@ public class VagaRestController {
         return ResponseEntity.ok(vagaService.listar());
     }
 
-    @GetMapping("/get-one/{id}")
-    public ResponseEntity<Vaga> buscar(@PathVariable String id) {
-        return ResponseEntity.ok(vagaService.buscar(id));
+    @GetMapping("/get-one/{registro}")
+    public ResponseEntity<Vaga> buscar(@PathVariable String registro) {
+        return ResponseEntity.ok(vagaService.buscar(registro));
     }
 }
