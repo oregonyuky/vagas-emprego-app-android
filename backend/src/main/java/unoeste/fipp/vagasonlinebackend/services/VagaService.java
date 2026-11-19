@@ -1,10 +1,6 @@
 package unoeste.fipp.vagasonlinebackend.services;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import unoeste.fipp.vagasonlinebackend.dto.InteresseRequest;
 import unoeste.fipp.vagasonlinebackend.dto.VagaRequest;
 import unoeste.fipp.vagasonlinebackend.entities.Cargo;
@@ -19,7 +15,6 @@ import unoeste.fipp.vagasonlinebackend.repositories.VagaRepository;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 @Service
 public class VagaService {
@@ -27,31 +22,17 @@ public class VagaService {
     private final EmpresaRepository empresaRepository;
     private final CargoRepository cargoRepository;
     private final InteresseRepository interesseRepository;
-    private final MongoTemplate mongoTemplate;
 
     public VagaService(VagaRepository vagaRepository, EmpresaRepository empresaRepository,
-                       CargoRepository cargoRepository, InteresseRepository interesseRepository,
-                       MongoTemplate mongoTemplate) {
+                       CargoRepository cargoRepository, InteresseRepository interesseRepository) {
         this.vagaRepository = vagaRepository;
         this.empresaRepository = empresaRepository;
         this.cargoRepository = cargoRepository;
         this.interesseRepository = interesseRepository;
-        this.mongoTemplate = mongoTemplate;
     }
 
-    public List<Vaga> listar(String cidade, String estado, String cargo, String empresa) {
-        Query query = new Query();
-        addContains(query, "cidade", cidade);
-        addContains(query, "estado", estado);
-        addContains(query, "cargo.nome", cargo);
-        addContains(query, "empresa.nomeFantasia", empresa);
-        return mongoTemplate.find(query, Vaga.class);
-    }
-
-    private void addContains(Query query, String field, String value) {
-        if (StringUtils.hasText(value)) {
-            query.addCriteria(Criteria.where(field).regex(Pattern.quote(value.trim()), "i"));
-        }
+    public List<Vaga> listar() {
+        return vagaRepository.findAll();
     }
 
     public Vaga buscar(String id) {
@@ -63,8 +44,8 @@ public class VagaService {
         return salvar(new Vaga(), request);
     }
 
-    public Vaga atualizar(String id, VagaRequest request) {
-        return salvar(buscar(id), request);
+    public Vaga atualizar(VagaRequest request) {
+        return salvar(buscar(request.id()), request);
     }
 
     private Vaga salvar(Vaga vaga, VagaRequest request) {
@@ -92,10 +73,10 @@ public class VagaService {
         vagaRepository.deleteById(id);
     }
 
-    public Interesse registrarInteresse(String vagaId, InteresseRequest request) {
-        Vaga vaga = buscar(vagaId);
+    public Interesse registrarInteresse(InteresseRequest request) {
+        Vaga vaga = buscar(request.vagaId());
         Interesse interesse = new Interesse();
-        interesse.setVagaId(vagaId);
+        interesse.setVagaId(request.vagaId());
         interesse.setVagaDescricao(vaga.getCargo().getNome() + " - " + vaga.getEmpresa().getNomeFantasia());
         interesse.setNome(request.nome().trim());
         interesse.setCpf(request.cpf());
@@ -104,8 +85,4 @@ public class VagaService {
         return interesseRepository.save(interesse);
     }
 
-    public List<Interesse> listarInteresses(String vagaId) {
-        buscar(vagaId);
-        return interesseRepository.findByVagaIdOrderByRegistradoEmDesc(vagaId);
-    }
 }

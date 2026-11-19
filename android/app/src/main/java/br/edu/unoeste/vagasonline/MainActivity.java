@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,15 +61,24 @@ public class MainActivity extends AppCompatActivity {
         setLoading(true);
         String cidade = text(inputCidade);
         String estado = text(inputEstado).toUpperCase(Locale.ROOT);
-        api.listarVagas(cidade.isBlank() ? null : cidade, estado.isBlank() ? null : estado)
+        api.listarVagas()
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<List<Vaga>> call,
                                            @NonNull Response<List<Vaga>> response) {
                         setLoading(false);
                         if (response.isSuccessful() && response.body() != null) {
-                            adapter.setVagas(response.body());
-                            empty.setVisibility(response.body().isEmpty() ? View.VISIBLE : View.GONE);
+                            List<Vaga> filtradas = new ArrayList<>();
+                            for (Vaga vaga : response.body()) {
+                                boolean cidadeConfere = cidade.isBlank()
+                                        || vaga.getCidade().toLowerCase(Locale.ROOT)
+                                        .contains(cidade.toLowerCase(Locale.ROOT));
+                                boolean estadoConfere = estado.isBlank()
+                                        || vaga.getEstado().equalsIgnoreCase(estado);
+                                if (cidadeConfere && estadoConfere) filtradas.add(vaga);
+                            }
+                            adapter.setVagas(filtradas);
+                            empty.setVisibility(filtradas.isEmpty() ? View.VISIBLE : View.GONE);
                         } else {
                             showError("Não foi possível carregar as vagas (HTTP " + response.code() + ").");
                         }
@@ -130,14 +140,14 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
-                    enviarInteresse(vaga, new InteresseRequest(
-                            text(nome), text(cpf), text(email), text(telefone)), dialog);
+                    enviarInteresse(new InteresseRequest(
+                            vaga.getId(), text(nome), text(cpf), text(email), text(telefone)), dialog);
                 }));
         dialog.show();
     }
 
-    private void enviarInteresse(Vaga vaga, InteresseRequest request, AlertDialog dialog) {
-        api.registrarInteresse(vaga.getId(), request).enqueue(new Callback<>() {
+    private void enviarInteresse(InteresseRequest request, AlertDialog dialog) {
+        api.registrarInteresse(request).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {

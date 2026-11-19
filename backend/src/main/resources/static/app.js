@@ -1,4 +1,4 @@
-const api = '/api';
+const api = '/apis';
 const form = document.querySelector('#vaga-form');
 const feedback = document.querySelector('#feedback');
 const tbody = document.querySelector('#vagas-body');
@@ -30,8 +30,8 @@ async function request(url, options) {
 
 async function carregarCatalogos() {
     const [empresas, cargos] = await Promise.all([
-        request(`${api}/empresas`),
-        request(`${api}/cargos`)
+        request(`${api}/empresa/get-all-empresas`),
+        request(`${api}/cargo/get-all-cargos`)
     ]);
     fields.empresa.innerHTML = empresas.map(item =>
         `<option value="${item.id}">${escapeHtml(item.nomeFantasia)}</option>`).join('');
@@ -40,7 +40,7 @@ async function carregarCatalogos() {
 }
 
 async function carregarVagas() {
-    vagas = await request(`${api}/vagas`);
+    vagas = await request(`${api}/vagas/get-all`);
     renderizarVagas();
 }
 
@@ -76,8 +76,9 @@ form.addEventListener('submit', async event => {
         remuneracao: Number(fields.remuneracao.value)
     };
     const id = fields.id.value;
+    if (id) body.id = id;
     try {
-        await request(id ? `${api}/vagas/${id}` : `${api}/vagas`, {
+        await request(id ? `${api}/vagas` : `${api}/vagas/vaga`, {
             method: id ? 'PUT' : 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body)

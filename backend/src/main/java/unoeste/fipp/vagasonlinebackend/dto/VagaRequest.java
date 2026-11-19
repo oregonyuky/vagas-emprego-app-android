@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record VagaRequest(
+        String id,
         @NotBlank String empresaId,
         @NotBlank String cargoId,
         @NotBlank @Size(max = 100) String cidade,

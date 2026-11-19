@@ -50,7 +50,7 @@ No Linux/macOS:
 Quando aparecer "Started VagasOnlineApplication", acesse:
 
   Painel web:  http://localhost:8080/
-  Teste da API: http://localhost:8080/api
+  Teste da API: http://localhost:8080/apis/vagas/get-all
 
 Na primeira execução são criados cargos, empresas e uma vaga de demonstração.
 O painel web permite criar, editar e excluir vagas.
@@ -104,7 +104,7 @@ APK gerado:
 
 - Busca de empresas e cargos.
 - Criação, consulta, edição e exclusão de vagas.
-- Filtros de vagas por cidade, estado, cargo e empresa.
+- Pesquisa de vagas por cidade e estado no aplicativo Android.
 - Dados da vaga: empresa, cargo, cidade, estado, requisitos, formação,
   conhecimentos, regime (CLT/PJ), jornada e remuneração.
 - Painel web administrativo responsivo.
@@ -117,15 +117,14 @@ APK gerado:
 6. PRINCIPAIS ENDPOINTS
 -----------------------
 
-GET    /api/empresas
-GET    /api/cargos
-GET    /api/vagas
-GET    /api/vagas/{id}
-POST   /api/vagas
-PUT    /api/vagas/{id}
-DELETE /api/vagas/{id}
-POST   /api/vagas/{id}/interesses
-GET    /api/vagas/{id}/interesses
+POST   /apis/vagas/vaga
+PUT    /apis/vagas
+DELETE /apis/vagas/{id}
+GET    /apis/vagas/get-all
+GET    /apis/vagas/get-one/{id}
+GET    /apis/empresa/get-all-empresas
+GET    /apis/cargo/get-all-cargos
+POST   /apis/interesse/candidato
 
 
 7. ENCERRAR

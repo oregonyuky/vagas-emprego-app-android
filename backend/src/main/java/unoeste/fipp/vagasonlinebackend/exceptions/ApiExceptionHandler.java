@@ -14,7 +14,7 @@ import java.util.Map;
 public class ApiExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> notFound(ResourceNotFoundException exception) {
-        return error(HttpStatus.NOT_FOUND, exception.getMessage());
+        return error(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
