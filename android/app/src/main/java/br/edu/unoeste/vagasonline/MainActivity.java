@@ -1,7 +1,9 @@
 package br.edu.unoeste.vagasonline;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         EditText cpf = input("CPF (somente números)", InputType.TYPE_CLASS_NUMBER);
         EditText email = input("E-mail", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         EditText telefone = input("Telefone", InputType.TYPE_CLASS_PHONE);
+        aplicarMascaraTelefone(telefone);
         container.addView(nome);
         container.addView(cpf);
         container.addView(email);
@@ -132,9 +135,12 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 .setOnClickListener(view -> {
+                    int digitosTelefone = text(telefone).replaceAll("\\D", "").length();
                     if (text(nome).isBlank() || text(cpf).length() != 11
-                            || text(email).isBlank() || text(telefone).isBlank()) {
-                        Toast.makeText(this, "Preencha todos os campos e informe um CPF com 11 dígitos.",
+                            || text(email).isBlank()
+                            || (digitosTelefone != 10 && digitosTelefone != 11)) {
+                        Toast.makeText(this,
+                                "Preencha todos os campos, o CPF com 11 dígitos e o telefone com DDD.",
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
@@ -171,6 +177,50 @@ public class MainActivity extends AppCompatActivity {
         editText.setInputType(inputType);
         editText.setSingleLine(true);
         return editText;
+    }
+
+    private void aplicarMascaraTelefone(EditText campo) {
+        campo.addTextChangedListener(new TextWatcher() {
+            private boolean atualizando;
+
+            @Override
+            public void beforeTextChanged(CharSequence texto, int inicio, int quantidade, int depois) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence texto, int inicio, int antes, int quantidade) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable texto) {
+                if (atualizando) return;
+
+                String numeros = texto.toString().replaceAll("\\D", "");
+                if (numeros.length() > 11) {
+                    numeros = numeros.substring(0, 11);
+                }
+
+                String formatado = formatarTelefone(numeros);
+                atualizando = true;
+                campo.setText(formatado);
+                campo.setSelection(formatado.length());
+                atualizando = false;
+            }
+        });
+    }
+
+    private String formatarTelefone(String numeros) {
+        if (numeros.isEmpty()) return "";
+        if (numeros.length() <= 2) return "(" + numeros;
+        if (numeros.length() <= 6) {
+            return "(" + numeros.substring(0, 2) + ") " + numeros.substring(2);
+        }
+        if (numeros.length() <= 10) {
+            return "(" + numeros.substring(0, 2) + ") "
+                    + numeros.substring(2, 6) + "-" + numeros.substring(6);
+        }
+        return "(" + numeros.substring(0, 2) + ") "
+                + numeros.substring(2, 7) + "-" + numeros.substring(7);
     }
 
     private String text(EditText editText) {

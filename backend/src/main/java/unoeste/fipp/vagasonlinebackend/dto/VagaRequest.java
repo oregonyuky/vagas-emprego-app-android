@@ -12,7 +12,10 @@ public record VagaRequest(
         @NotNull Empresa empresa,
         @NotBlank @Size(max = 150) String cargo,
         @NotBlank @Size(max = 100) String cidade,
-        @NotBlank @Pattern(regexp = "(?i)[A-Z]{2}", message = "deve conter a sigla com 2 letras") String estado,
+        @NotBlank @Pattern(
+                regexp = "(?i)(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)",
+                message = "deve ser uma unidade federativa brasileira válida"
+        ) String estado,
         @JsonProperty("pre_requisitos") @NotBlank @Size(max = 2000) String preRequisitos,
         @NotBlank @Size(max = 500) String formacao,
         @JsonProperty("conhecimentos_requeridos") @NotBlank @Size(max = 2000) String conhecimentosRequeridos,

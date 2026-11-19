@@ -37,6 +37,20 @@ Na inicialização, a API carrega automaticamente e sem duplicar os arquivos em
 backend/src/main/resources/data nas coleções cargos, empresas, vagas e
 interesses. A carga contém 31 cargos, 19 empresas, 10 vagas e 1 interesse.
 
+Os dados enviados por quem toca em "Tenho interesse" ficam no banco
+vagas_online, coleção interesses. Cada documento guarda a vaga e os dados do
+candidato (nome, CPF, e-mail, telefone e, quando informada, formação). Como os
+endpoints definidos no trabalho não incluem consulta de interesses, visualize-os
+pelo MongoDB
+Compass conectando em mongodb://localhost:27017 e abrindo:
+
+  vagas_online > interesses
+
+Ou pelo mongosh:
+
+  mongosh mongodb://localhost:27017/vagas_online
+  db.interesses.find().pretty()
+
 
 3. INICIAR A API E O FRONTEND WEB
 ---------------------------------
