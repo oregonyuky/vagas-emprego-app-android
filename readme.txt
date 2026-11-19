@@ -126,6 +126,7 @@ APK gerado:
 - Dados da vaga: empresa, cargo, cidade, estado, requisitos, formação,
   conhecimentos, regime (CLT/PJ/Estágio), jornada e remuneração.
 - Painel web administrativo responsivo.
+- Tabela administrativa com todos os detalhes e busca textual de vagas.
 - Pesquisa e detalhes de vagas no Android.
 - Ação "Tenho interesse" no Android com nome, CPF, e-mail e telefone.
 - Persistência de vagas e interesses no MongoDB.

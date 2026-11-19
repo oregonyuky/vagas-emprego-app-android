@@ -2,6 +2,8 @@ const api = '/apis';
 const form = document.querySelector('#vaga-form');
 const feedback = document.querySelector('#feedback');
 const tbody = document.querySelector('#vagas-body');
+const buscaVagas = document.querySelector('#busca-vagas');
+const resultadoBusca = document.querySelector('#resultado-busca');
 let vagas = [];
 let empresas = [];
 let cargos = [];
@@ -48,19 +50,58 @@ async function carregarVagas() {
 }
 
 function renderizarVagas() {
-    document.querySelector('#empty').classList.toggle('hidden', vagas.length > 0);
-    tbody.innerHTML = vagas.map(vaga => `
+    const vagasFiltradas = filtrarVagas();
+    const empty = document.querySelector('#empty');
+    empty.textContent = vagas.length === 0
+        ? 'Nenhuma vaga cadastrada.'
+        : 'Nenhuma vaga encontrada para esta busca.';
+    empty.classList.toggle('hidden', vagasFiltradas.length > 0);
+    resultadoBusca.textContent = `${vagasFiltradas.length} de ${vagas.length} vaga(s)`;
+
+    tbody.innerHTML = vagasFiltradas.map(vaga => `
         <tr>
             <td><strong>${escapeHtml(vaga.cargo)}</strong></td>
             <td>${escapeHtml(vaga.empresa.nome_fantasia)}</td>
             <td>${escapeHtml(vaga.cidade)}/${escapeHtml(vaga.estado)}</td>
             <td>${escapeHtml(vaga.regime)}</td>
+            <td>${escapeHtml(vaga.jornada_trabalho)}</td>
+            <td class="details-cell">${escapeHtml(vaga.formacao)}</td>
+            <td class="details-cell">${escapeHtml(vaga.pre_requisitos)}</td>
+            <td class="details-cell">${escapeHtml(vaga.conhecimentos_requeridos)}</td>
             <td>${escapeHtml(vaga.remuneracao)}</td>
             <td class="actions">
                 <button class="button ghost small" data-edit="${escapeHtml(vaga.registro)}">Editar</button>
                 <button class="button danger small" data-delete="${escapeHtml(vaga.registro)}">Excluir</button>
             </td>
         </tr>`).join('');
+}
+
+function filtrarVagas() {
+    const termo = normalizar(buscaVagas.value);
+    if (!termo) return vagas;
+
+    return vagas.filter(vaga => [
+        vaga.registro,
+        vaga.cargo,
+        vaga.empresa?.nome_fantasia,
+        vaga.empresa?.razao_social,
+        vaga.cidade,
+        vaga.estado,
+        vaga.regime,
+        vaga.jornada_trabalho,
+        vaga.formacao,
+        vaga.pre_requisitos,
+        vaga.conhecimentos_requeridos,
+        vaga.remuneracao
+    ].some(valor => normalizar(valor).includes(termo)));
+}
+
+function normalizar(value = '') {
+    return String(value)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
 }
 
 form.addEventListener('submit', async event => {
@@ -155,6 +196,7 @@ function escapeHtml(value = '') {
 
 document.querySelector('#cancel-edit').addEventListener('click', limparFormulario);
 document.querySelector('#refresh').addEventListener('click', () => carregarVagas().catch(showStartupError));
+buscaVagas.addEventListener('input', renderizarVagas);
 
 function showStartupError(error) {
     setFeedback(error.message, 'error');

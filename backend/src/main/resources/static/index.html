@@ -111,6 +111,13 @@
             </div>
             <button id="refresh" class="button ghost" type="button">Atualizar</button>
         </div>
+        <div class="table-filters">
+            <label for="busca-vagas">Buscar vagas
+                <input id="busca-vagas" type="search"
+                       placeholder="Cargo, empresa, cidade, UF, requisitos...">
+            </label>
+            <span id="resultado-busca" class="result-count" aria-live="polite"></span>
+        </div>
         <div class="table-wrap">
             <table>
                 <thead>
@@ -119,6 +126,10 @@
                     <th>Empresa</th>
                     <th>Local</th>
                     <th>Regime</th>
+                    <th>Jornada</th>
+                    <th>Formação</th>
+                    <th>Requisitos</th>
+                    <th>Conhecimentos</th>
                     <th>Remuneração</th>
                     <th>Ações</th>
                 </tr>
