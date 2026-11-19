@@ -122,7 +122,7 @@ APK gerado:
 
 - Busca de empresas e cargos.
 - Criação, consulta, edição e exclusão de vagas.
-- Pesquisa de vagas por cidade e estado no aplicativo Android.
+- Pesquisa de vagas por cidade, estado, cargo, regime e faixa de remuneração no Android.
 - Dados da vaga: empresa, cargo, cidade, estado, requisitos, formação,
   conhecimentos, regime (CLT/PJ/Estágio), jornada e remuneração.
 - Painel web administrativo responsivo.
