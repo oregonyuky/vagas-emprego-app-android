@@ -77,7 +77,43 @@ input:focus, select:focus, textarea:focus { outline: 3px solid #5b47e025; border
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: .9rem .7rem; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
 th { color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
-td.details-cell { min-width: 190px; max-width: 280px; white-space: normal; line-height: 1.4; }
+.details-thumbnails { display: flex; flex-wrap: wrap; gap: .4rem; width: 230px; }
+.info-chip {
+    padding: .38rem .55rem;
+    color: var(--accent-dark);
+    background: #eeebff;
+    border: 1px solid #d8d0ff;
+    border-radius: 999px;
+    font: inherit;
+    font-size: .72rem;
+    font-weight: 750;
+    cursor: help;
+}
+.info-chip:hover, .info-chip:focus-visible { color: white; background: var(--accent); outline: none; }
+.vaga-tooltip {
+    position: fixed;
+    z-index: 1000;
+    display: grid;
+    gap: .45rem;
+    width: min(360px, calc(100vw - 24px));
+    max-height: min(260px, calc(100vh - 24px));
+    padding: .85rem 1rem;
+    overflow-y: auto;
+    color: white;
+    background: #172036;
+    border-radius: 10px;
+    box-shadow: 0 14px 38px #17203655;
+    font-size: .85rem;
+    line-height: 1.45;
+    white-space: normal;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity .12s ease, transform .12s ease;
+}
+.vaga-tooltip.visible { visibility: visible; opacity: 1; transform: translateY(0); }
+.vaga-tooltip strong { color: #cfc7ff; }
 td.actions { display: flex; gap: .4rem; }
 .empty { padding: 2rem; color: var(--muted); text-align: center; }
 .hidden { display: none !important; }

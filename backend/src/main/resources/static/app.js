@@ -4,6 +4,8 @@ const feedback = document.querySelector('#feedback');
 const tbody = document.querySelector('#vagas-body');
 const buscaVagas = document.querySelector('#busca-vagas');
 const resultadoBusca = document.querySelector('#resultado-busca');
+const vagaTooltip = document.querySelector('#vaga-tooltip');
+let tooltipAtivo = null;
 let vagas = [];
 let empresas = [];
 let cargos = [];
@@ -65,15 +67,59 @@ function renderizarVagas() {
             <td>${escapeHtml(vaga.cidade)}/${escapeHtml(vaga.estado)}</td>
             <td>${escapeHtml(vaga.regime)}</td>
             <td>${escapeHtml(vaga.jornada_trabalho)}</td>
-            <td class="details-cell">${escapeHtml(vaga.formacao)}</td>
-            <td class="details-cell">${escapeHtml(vaga.pre_requisitos)}</td>
-            <td class="details-cell">${escapeHtml(vaga.conhecimentos_requeridos)}</td>
+            <td>
+                <div class="details-thumbnails">
+                    ${criarThumbnail('Formação', vaga.formacao)}
+                    ${criarThumbnail('Requisitos', vaga.pre_requisitos)}
+                    ${criarThumbnail('Conhecimentos', vaga.conhecimentos_requeridos)}
+                </div>
+            </td>
             <td>${escapeHtml(vaga.remuneracao)}</td>
             <td class="actions">
                 <button class="button ghost small" data-edit="${escapeHtml(vaga.registro)}">Editar</button>
                 <button class="button danger small" data-delete="${escapeHtml(vaga.registro)}">Excluir</button>
             </td>
         </tr>`).join('');
+}
+
+function criarThumbnail(titulo, conteudo) {
+    return `<button type="button" class="info-chip"
+                    aria-label="Exibir ${escapeHtml(titulo)}"
+                    data-tooltip-title="${escapeHtml(titulo)}"
+                    data-tooltip="${escapeHtml(conteudo)}">${escapeHtml(titulo)}</button>`;
+}
+
+function mostrarTooltip(elemento) {
+    tooltipAtivo = elemento;
+    vagaTooltip.replaceChildren();
+
+    const titulo = document.createElement('strong');
+    titulo.textContent = elemento.dataset.tooltipTitle;
+    const conteudo = document.createElement('span');
+    conteudo.textContent = elemento.dataset.tooltip;
+    vagaTooltip.append(titulo, conteudo);
+    vagaTooltip.classList.add('visible');
+    vagaTooltip.setAttribute('aria-hidden', 'false');
+    elemento.setAttribute('aria-describedby', 'vaga-tooltip');
+
+    const alvo = elemento.getBoundingClientRect();
+    const tooltip = vagaTooltip.getBoundingClientRect();
+    const margem = 12;
+    let left = alvo.left + (alvo.width - tooltip.width) / 2;
+    left = Math.max(margem, Math.min(left, window.innerWidth - tooltip.width - margem));
+    let top = alvo.bottom + 8;
+    if (top + tooltip.height > window.innerHeight - margem) {
+        top = alvo.top - tooltip.height - 8;
+    }
+    vagaTooltip.style.left = `${left}px`;
+    vagaTooltip.style.top = `${Math.max(margem, top)}px`;
+}
+
+function esconderTooltip() {
+    if (tooltipAtivo) tooltipAtivo.removeAttribute('aria-describedby');
+    tooltipAtivo = null;
+    vagaTooltip.classList.remove('visible');
+    vagaTooltip.setAttribute('aria-hidden', 'true');
 }
 
 function filtrarVagas() {
@@ -152,6 +198,21 @@ tbody.addEventListener('click', async event => {
     }
 });
 
+tbody.addEventListener('mouseover', event => {
+    const thumbnail = event.target.closest('.info-chip');
+    if (thumbnail) mostrarTooltip(thumbnail);
+});
+tbody.addEventListener('mouseout', event => {
+    if (event.target.closest('.info-chip')) esconderTooltip();
+});
+tbody.addEventListener('focusin', event => {
+    const thumbnail = event.target.closest('.info-chip');
+    if (thumbnail) mostrarTooltip(thumbnail);
+});
+tbody.addEventListener('focusout', event => {
+    if (event.target.closest('.info-chip')) esconderTooltip();
+});
+
 function preencherEdicao(vaga) {
     fields.id.value = vaga.registro;
     fields.registro.value = vaga.registro;
@@ -197,6 +258,8 @@ function escapeHtml(value = '') {
 document.querySelector('#cancel-edit').addEventListener('click', limparFormulario);
 document.querySelector('#refresh').addEventListener('click', () => carregarVagas().catch(showStartupError));
 buscaVagas.addEventListener('input', renderizarVagas);
+window.addEventListener('scroll', esconderTooltip, true);
+window.addEventListener('resize', esconderTooltip);
 
 function showStartupError(error) {
     setFeedback(error.message, 'error');
